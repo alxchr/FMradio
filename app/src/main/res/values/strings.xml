@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">FMradio</string>
+    <!-- Preference Titles -->
+    <string name="port_header">Serial port</string>
+    <string name="sync_header">Sync</string>
+    <string name="port_key">port</string>
+    <string name="speed_key">speed</string>
+    <string name="port_name">Serial port name</string>
+    <string name="port_speed">Serial port speed</string>
+    <string name="default_speed">9600</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+</resources>

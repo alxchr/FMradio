@@ -1,0 +1,14 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/port_header">
+        <EditTextPreference
+            app:key="@string/port_key"
+            app:title="@string/port_name"
+            app:useSimpleSummaryProvider="true" />
+        <EditTextPreference
+            app:key="@string/speed_key"
+            app:defaultValue="@string/default_speed"
+            app:title="@string/port_speed"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+</PreferenceScreen>

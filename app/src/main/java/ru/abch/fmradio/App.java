@@ -5,6 +5,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.InvalidParameterException;
+
+import ru.abch.fmradio.android_serialport_api.SerialPort;
+
 public class App extends Application {
     static App instance = null;
     static String TAG = "App";
@@ -13,6 +19,7 @@ public class App extends Application {
     static int speed, channel, volume;
     public static int state;
     public static final int SETTINGS = 0, MAIN = 1;
+    private static SerialPort serialPort = null;
     public void onCreate() {
         super.onCreate();
         Log.d(TAG,"onCreate");
@@ -53,5 +60,21 @@ public class App extends Application {
     }
     static {
         System.loadLibrary("serial-port");
+    }
+    public static SerialPort getSerialPort() throws SecurityException, IOException, InvalidParameterException {
+        if (serialPort == null) {
+            /* Check parameters */
+            if (port.length() == 0) {
+                throw new InvalidParameterException();
+            }
+            serialPort = new SerialPort(new File(port), speed, 0);
+        }
+        return serialPort;
+    }
+    public static void closeSerialPort() {
+        if (serialPort != null) {
+            serialPort.close();
+            serialPort = null;
+        }
     }
 }

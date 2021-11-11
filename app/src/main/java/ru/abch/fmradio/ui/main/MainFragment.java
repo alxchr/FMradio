@@ -1,5 +1,8 @@
 package ru.abch.fmradio.ui.main;
 
+import static android.content.Context.AUDIO_SERVICE;
+
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +33,7 @@ public class MainFragment extends Fragment {
     LiveData<Integer> rssi;
     TextView tvRSSI, tvRDSText, tvStation;
     private static final String TAG = "MainFragment";
+    AudioManager am;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -46,8 +50,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        // TODO: Use the ViewModel
+        am = (AudioManager) requireActivity().getSystemService(AUDIO_SERVICE);
         rulerValuePicker.selectValue(App.getChannel()/10);
         rulerValuePicker.setValuePickerListener(new RulerValuePickerListener() {
             @Override

@@ -37,6 +37,10 @@ public class RadioService extends Service {
     ReadRadioThread readThread;
     private static final int ID_SERVICE = 101;
     Context ctx;
+    boolean running;
+    RadioState radioState = null;
+    FreqsArray freqs;
+    Gson gson;
     public RadioService() {
     }
 
@@ -57,12 +61,8 @@ public class RadioService extends Service {
             /* Create a receiving thread */
             readThread = new ReadRadioThread();
             readThread.start();
-        } catch (SecurityException e) {
-            Log.d(TAG, "Security error");
-        } catch (IOException e) {
-            Log.d(TAG, "Unknown error");
-        } catch (InvalidParameterException e) {
-            Log.d(TAG, "Configuration error");
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
         }
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -75,6 +75,39 @@ public class RadioService extends Service {
                 .build();
 
         startForeground(ID_SERVICE, notification);
+        if(radioState == null) radioState = new RadioState(10000,0);
+    }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        RadioControl control;
+        String sControl;
+        if (intent != null) {
+            running = intent.getBooleanExtra("run", false);
+            int freq = intent.getIntExtra("freq", 0);
+            int volume = intent.getIntExtra("vol", -1);
+            boolean search = intent.getBooleanExtra("search", false);
+            boolean mute = intent.getBooleanExtra("mute", false);
+            Log.d(TAG, "onStartCommand, run = " + running + " " + freq + " " + mute + " " + search);
+            if (search) {
+                control = new RadioControl(radioState.f, radioState.v, radioState.m, true);
+            } else if (freq > 0) {
+                control = new RadioControl(freq, radioState.v, radioState.m, false);
+            } else if(volume != -1) {
+                control = new RadioControl(radioState.f, volume, radioState.m, false);
+            } else {
+                control = new RadioControl(radioState.f, radioState.v, mute, false);
+            }
+            gson = new Gson();
+            sControl = gson.toJson(control);
+            Log.d(TAG, sControl);
+            try {
+                outputStream.write(sControl.getBytes());
+                outputStream.write('\n');
+            } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
+            }
+        }
+        return super.onStartCommand(intent, flags, startId);
     }
     @RequiresApi(Build.VERSION_CODES.O)
     private String createNotificationChannel(NotificationManager notificationManager){
@@ -120,25 +153,33 @@ public class RadioService extends Service {
                         Arrays.fill(readBuffer, (byte) 0);
                         GsonBuilder builder = new GsonBuilder();
                         Gson gson = builder.create();
-                        RadioState radioState = gson.fromJson(line, RadioState.class);
-                        if(radioState != null) {
-                            Parcel radioParcel = Parcel.obtain();
-                            radioParcel.writeInt(radioState.f);
-                            radioParcel.writeInt(radioState.v);
-                            radioParcel.writeInt(radioState.r);
-                            radioParcel.writeByte((byte) (radioState.m ? 1 : 0));
-                            radioParcel.writeString(radioState.n);
-                            radioParcel.writeString(radioState.t);
-                            RadioStateParcel radioStateParcel = new RadioStateParcel(radioParcel);
-                            Intent intent = new Intent("android.intent.radio.state",null);
-                            intent.putExtra("state",radioStateParcel);
-                            sendBroadcast(intent);
+                        try {
+                            radioState = gson.fromJson(line, RadioState.class);
+                            if (radioState != null) {
+                                Parcel radioParcel = Parcel.obtain();
+                                RadioStateParcel radioStateParcel = new RadioStateParcel(radioParcel);
+                                radioStateParcel.f = radioState.f;
+                                radioStateParcel.v = radioState.v;
+                                radioStateParcel.r = radioState.r;
+                                radioStateParcel.m = radioState.m;
+                                radioStateParcel.n = radioState.n;
+                                radioStateParcel.t = radioState.t;
+                                Intent intent = new Intent("ru.abch.fmradio.state", null);
+                                intent.putExtra("state", radioStateParcel);
+                                sendBroadcast(intent);
+                            }
+                        } catch (Exception e) {
+                            Log.d(TAG, e.getMessage());
                         }
-                        FreqsArray freqs = gson.fromJson(line, FreqsArray.class);
-                        if (freqs != null) {
-                            Intent intent = new Intent("android.intent.radio.freqs",null);
-                            intent.putExtra("freqs", freqs.F);
-                            sendBroadcast(intent);
+                        try {
+                            freqs = gson.fromJson(line, FreqsArray.class);
+                            if (freqs != null) {
+                                Intent intent = new Intent("ru.abch.fmradio.freqs", null);
+                                intent.putExtra("freqs", freqs.F);
+                                sendBroadcast(intent);
+                            }
+                        } catch (Exception e) {
+                            Log.d(TAG, e.getMessage());
                         }
                     }
                     break;

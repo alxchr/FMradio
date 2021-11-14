@@ -9,9 +9,9 @@ import ru.abch.fmradio.App;
 public class MainViewModel extends ViewModel {
     // TODO: Implement the ViewModel
     public String station = "", RDSText = "qwerty";
-    int level = 0;
+    int level = 0, freq = 10000;
     MutableLiveData<String> stationData, RDSData;
-    MutableLiveData<Integer> levelData;
+    MutableLiveData<Integer> levelData, freqData;
     public LiveData<String> getStation() {
         if(stationData == null) {
             stationData = new MutableLiveData<>();
@@ -20,7 +20,7 @@ public class MainViewModel extends ViewModel {
         return stationData;
     }
     public void loadStation(int f, String rdsName) {
-        if(rdsName.length() > 0) station = rdsName;
+        if(rdsName != null && rdsName.length() > 0) station = rdsName;
         else {
             station = f/100. + " Mhz";
         }
@@ -52,10 +52,24 @@ public class MainViewModel extends ViewModel {
         return levelData;
     }
     public void loadRSSI(int l) {
-        level =l;
+        level = l;
         levelData.postValue(level);
     }
     private void loadRSSI() {
         levelData.postValue(level);
+    }
+    private void loadFreq() {
+        freqData.postValue(freq);
+    }
+    public void loadFreq(int f) {
+        freq = f;
+        freqData.postValue(freq);
+    }
+    public LiveData<Integer> getFreq() {
+        if(freqData == null) {
+            freqData = new MutableLiveData<>();
+            loadFreq();
+        }
+        return freqData;
     }
 }

@@ -4,27 +4,27 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class RadioStateParcel implements Parcelable {
-    public int f, v, r;
-    public boolean m;
-    public String n, t;
+    public int freq, volume, rssi;
+    public boolean mute;
+    public String name, info;
 
     protected RadioStateParcel(Parcel in) {
-        f = in.readInt();
-        v = in.readInt();
-        r = in.readInt();
-        m = in.readByte() != 0;
-        n = in.readString();
-        t = in.readString();
+        freq = in.readInt();
+        volume = in.readInt();
+        rssi = in.readInt();
+        mute = in.readByte() != 0;
+        name = in.readString();
+        info = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(f);
-        dest.writeInt(v);
-        dest.writeInt(r);
-        dest.writeByte((byte) (m ? 1 : 0));
-        dest.writeString(n);
-        dest.writeString(t);
+        dest.writeInt(freq);
+        dest.writeInt(volume);
+        dest.writeInt(rssi);
+        dest.writeByte((byte) (mute ? 1 : 0));
+        dest.writeString(name);
+        dest.writeString(info);
     }
 
     @Override

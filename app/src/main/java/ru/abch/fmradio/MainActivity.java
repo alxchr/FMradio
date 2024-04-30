@@ -7,9 +7,15 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import ru.abch.fmradio.ui.main.MainFragment;
 import ru.abch.fmradio.ui.main.MainViewModel;
@@ -20,10 +26,14 @@ public class MainActivity extends AppCompatActivity {
     IntentFilter stateFilter, searchFilter;
     private final String TAG = "MainActivity";
     RadioStateParcel state;
+    LiveData<ArrayList<Integer>> freqsData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main_activity);
         if (savedInstanceState == null) {
             if (App.getPort().length() == 0) {
@@ -44,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         searchFilter.addAction("ru.abch.fmradio.freqs");
         searchFilter.addCategory("android.intent.action.DEFAULT");
         registerReceiver(freqsReceiver, searchFilter);
+        freqsData = mViewModel.getFreqsData();
     }
     @Override
     public void onBackPressed() {
@@ -51,6 +62,13 @@ public class MainActivity extends AppCompatActivity {
             gotoMainFragment();
         } else {
             super.onBackPressed();
+            /*
+            Intent radioIntent = new Intent(this, RadioService.class);
+            radioIntent.putExtra("run",true);
+            radioIntent.putExtra("mute",true);
+            startService(radioIntent);
+
+             */
             System.exit(0);
         }
     }
@@ -62,14 +80,14 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver stateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            int prevF = (state == null)? 10000 : state.f;
+            int prevF = (state == null)? 10000 : state.freq;
             state = intent.getParcelableExtra("state");
-            int f = state.f;
-            int v = state.v;
-            int r = state.r;
-            boolean m = state.m;
-            String n = state.n;
-            String t = state.t;
+            int f = state.freq;
+            int v = state.volume;
+            int r = state.rssi;
+            boolean m = state.mute;
+            String n = state.name;
+            String t = state.info;
             Log.d(TAG, intent.getAction() + " " + f + " " + v + " " + r + " " + m + " " + n + " " + t);
             mViewModel.loadRSSI(r);
             mViewModel.loadStation(f,n);
@@ -81,8 +99,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             int [] freqs = intent.getIntArrayExtra("freqs");
+            ArrayList<Integer> freqsList = new ArrayList<>();
             if(freqs != null) {
+                for (Integer f : freqs) {
+                    freqsList.add(f);
+                }
                 Log.d(TAG, "Freqs array received, length " + freqs.length);
+                mViewModel.loadFreqsData(freqsList);
             }
         }
     };

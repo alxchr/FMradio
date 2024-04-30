@@ -1,12 +1,12 @@
 package ru.abch.fmradio;
 
 public class RadioControl {
-    int f, v;
-    boolean m, s;
+    int freq, volume;
+    boolean mute, seek;
     public RadioControl(int f, int v, boolean m, boolean s) {
-        this.f = f;
-        this.v = v;
-        this.m = m;
-        this.s = s;
+        this.freq = f;
+        this.volume = v;
+        this.mute = m;
+        this.seek = s;
     }
 }

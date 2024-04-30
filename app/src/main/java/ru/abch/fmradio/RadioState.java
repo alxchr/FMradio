@@ -1,11 +1,11 @@
 package ru.abch.fmradio;
 
 public class RadioState {
-    public int f, v, r;
-    public boolean m;
-    public String n, t;
+    public int freq, volume, rssi;
+    public boolean mute;
+    public String name, info;
     RadioState(int f, int v) {
-        this.f = f;
-        this.v = v;
+        this.freq = f;
+        this.volume = v;
     }
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import ru.abch.fmradio.android_serialport_api.SerialPort;
@@ -41,6 +42,7 @@ public class RadioService extends Service {
     RadioState radioState = null;
     FreqsArray freqs;
     Gson gson;
+    ArrayList<Integer> freqsList;
     public RadioService() {
     }
 
@@ -75,7 +77,7 @@ public class RadioService extends Service {
                 .build();
 
         startForeground(ID_SERVICE, notification);
-        if(radioState == null) radioState = new RadioState(10000,0);
+        if(radioState == null) radioState = new RadioState(App.getChannel(),App.getVolume());
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -83,19 +85,19 @@ public class RadioService extends Service {
         String sControl;
         if (intent != null) {
             running = intent.getBooleanExtra("run", false);
-            int freq = intent.getIntExtra("freq", 0);
-            int volume = intent.getIntExtra("vol", -1);
+            int freq = intent.getIntExtra("freq", App.getChannel());
+            int volume = intent.getIntExtra("vol", App.getVolume());
             boolean search = intent.getBooleanExtra("search", false);
             boolean mute = intent.getBooleanExtra("mute", false);
-            Log.d(TAG, "onStartCommand, run = " + running + " " + freq + " " + mute + " " + search);
+            Log.d(TAG, "onStartCommand, run " + running + " " + freq + " " + mute + " " + search + " " + volume);
             if (search) {
-                control = new RadioControl(radioState.f, radioState.v, radioState.m, true);
+                control = new RadioControl(radioState.freq, radioState.volume, radioState.mute, true);
             } else if (freq > 0) {
-                control = new RadioControl(freq, radioState.v, radioState.m, false);
+                control = new RadioControl(freq, volume, mute, false);
             } else if(volume != -1) {
-                control = new RadioControl(radioState.f, volume, radioState.m, false);
+                control = new RadioControl(radioState.freq, volume, mute, false);
             } else {
-                control = new RadioControl(radioState.f, radioState.v, mute, false);
+                control = new RadioControl(radioState.freq, radioState.volume, mute, false);
             }
             gson = new Gson();
             sControl = gson.toJson(control);
@@ -158,12 +160,12 @@ public class RadioService extends Service {
                             if (radioState != null) {
                                 Parcel radioParcel = Parcel.obtain();
                                 RadioStateParcel radioStateParcel = new RadioStateParcel(radioParcel);
-                                radioStateParcel.f = radioState.f;
-                                radioStateParcel.v = radioState.v;
-                                radioStateParcel.r = radioState.r;
-                                radioStateParcel.m = radioState.m;
-                                radioStateParcel.n = radioState.n;
-                                radioStateParcel.t = radioState.t;
+                                radioStateParcel.freq = radioState.freq;
+                                radioStateParcel.volume = radioState.volume;
+                                radioStateParcel.rssi = radioState.rssi;
+                                radioStateParcel.mute = radioState.mute;
+                                radioStateParcel.name = radioState.name;
+                                radioStateParcel.info = radioState.info;
                                 Intent intent = new Intent("ru.abch.fmradio.state", null);
                                 intent.putExtra("state", radioStateParcel);
                                 sendBroadcast(intent);
@@ -174,12 +176,17 @@ public class RadioService extends Service {
                         try {
                             freqs = gson.fromJson(line, FreqsArray.class);
                             if (freqs != null) {
+                                freqsList = new ArrayList<>();
+                                for (int f : freqs.FREQ) {
+                                    freqsList.add(f);
+                                }
+                                App.saveArrayList(freqsList,"freqs");
                                 Intent intent = new Intent("ru.abch.fmradio.freqs", null);
-                                intent.putExtra("freqs", freqs.F);
+                                intent.putExtra("freqs", freqs.FREQ);
                                 sendBroadcast(intent);
                             }
                         } catch (Exception e) {
-                            Log.d(TAG, e.getMessage());
+                            Log.e(TAG, e.getMessage());
                         }
                     }
                     break;

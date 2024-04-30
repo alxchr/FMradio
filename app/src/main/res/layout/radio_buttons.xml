@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:weightSum="8"
+    android:layout_height="0dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rb1"
+        style="@style/RadioButton"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rb2"
+        style="@style/RadioButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rb3"
+        style="@style/RadioButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rb4"
+        style="@style/RadioButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rb5"
+        style="@style/RadioButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rb6"
+        style="@style/RadioButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rb7"
+        style="@style/RadioButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/rb8"
+        style="@style/RadioButton"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" />
+</LinearLayout>

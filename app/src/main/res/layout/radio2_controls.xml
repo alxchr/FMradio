@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:weightSum="8"
+    android:id="@+id/ll_radio_controls"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:weightSum="6"
+        android:layout_weight="6"
+        android:layout_height="0dp">
+
+        <ImageButton
+            android:id="@+id/bt_mute"
+            android:src="@drawable/mute_96px"
+            style="@style/RadioButton"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <!--
+        <ImageButton
+            android:id="@+id/radio2_scan_down"
+            android:src="@drawable/less_than_96px"
+            style="@style/RadioButton"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"/>
+        <ImageButton
+            android:id="@+id/radio2_tune_down"
+            android:src="@drawable/sort_left_96px"
+            style="@style/RadioButton"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+            -->
+        <ImageButton
+            android:id="@+id/bt_search"
+            android:src="@drawable/search_96px"
+            style="@style/RadioButton"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/bt_plus"
+            android:src="@drawable/plus_90_2"
+            style="@style/RadioButton"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+        <!--
+        <ImageButton
+            android:id="@+id/radio2_scan_up"
+            android:src="@drawable/more_than_96px"
+            style="@style/RadioButton"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+            -->
+    </LinearLayout>
+    <SeekBar
+        android:id="@+id/radio_volume"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:max="15"
+        android:thumb="@drawable/thumb_image"
+        android:progressBackgroundTint="@color/grey1"
+        android:progressTint="@color/grey"
+        android:thumbTint="@color/white" />
+</LinearLayout>
